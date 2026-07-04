@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kargil Purgi Dictionary &amp; AI Tutor</string>
+    <string name="title_activity_main">Kargil Purgi Dictionary &amp; AI Tutor</string>
+    <string name="package_name">com.purgi.dictionary</string>
+    <string name="custom_url_scheme">com.purgi.dictionary</string>
+</resources>

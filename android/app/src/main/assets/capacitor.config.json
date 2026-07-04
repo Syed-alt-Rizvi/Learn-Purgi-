@@ -1,0 +1,8 @@
+{
+	"appId": "com.purgi.dictionary",
+	"appName": "Kargil Purgi Dictionary & AI Tutor",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https"
+	}
+}

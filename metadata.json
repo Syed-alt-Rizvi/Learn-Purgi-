@@ -1,0 +1,6 @@
+{
+  "name": "Purgi Language Portal",
+  "description": "An all-in-one educational platform highly optimized for learning and preserving the Kargili Purgi / Purki language, with comparative guides for Balti and other Western Archaic Tibetan dialects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
