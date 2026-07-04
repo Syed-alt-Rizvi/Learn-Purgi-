@@ -4,9 +4,10 @@ import { Sparkles, ExternalLink, ShieldCheck, HelpCircle } from "lucide-react";
 
 interface LoginScreenProps {
   onLoginSuccess?: () => void;
+  onLoginAsGuest?: () => void;
 }
 
-export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
+export default function LoginScreen({ onLoginSuccess, onLoginAsGuest }: LoginScreenProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -124,6 +125,15 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
             Sign in with Google Account
           </button>
 
+          {onLoginAsGuest && (
+            <button
+              onClick={onLoginAsGuest}
+              className="w-full h-12 bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-700 hover:to-emerald-900 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+            >
+              🚀 Continue as Guest (Bypass Login)
+            </button>
+          )}
+
           {/* New Tab Redirection Action */}
           <button
             onClick={openInNewTab}
@@ -133,10 +143,19 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           </button>
         </div>
 
-        {/* Error Message Panel */}
-        {error && (
-          <div className="mt-5 p-3 rounded-xl bg-red-950/60 border border-red-900/50 text-[10px] text-red-300 leading-relaxed font-semibold text-center">
-            ⚠️ {error}
+        {/* Error Message Panel & Troubleshooting */}
+        {error ? (
+          <div className="mt-5 p-4 rounded-xl bg-red-950/60 border border-red-900/50 text-[11px] text-red-200 leading-relaxed font-semibold text-center space-y-2">
+            <div>⚠️ {error}</div>
+            <div className="text-slate-300 font-normal border-t border-red-900/40 pt-2">
+              <strong>Why this happens:</strong> Browsers often block Google Sign-In inside preview frames or iframes due to 3rd-party cookie & cross-origin policies.
+              <br />
+              <span className="text-emerald-400 font-bold">To fix this:</span> Click <span className="underline cursor-pointer" onClick={openInNewTab}>"Open in New Tab"</span> above, or click <span className="underline cursor-pointer" onClick={onLoginAsGuest}>"Continue as Guest"</span> to bypass login completely and study instantly for free!
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 p-3 rounded-xl bg-slate-950/40 border border-slate-800/50 text-[10px] text-slate-400 text-center font-medium leading-relaxed">
+            💡 Google Sign-In may be restricted within the iframe preview. If you encounter any sign-in issues, click <strong>"Continue as Guest"</strong> or <strong>"Open in New Tab"</strong>.
           </div>
         )}
 

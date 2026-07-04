@@ -161,7 +161,27 @@ export default function App() {
           }
         }
       } else {
-        setUser(null);
+        const isGuest = localStorage.getItem("balti_purik_guest_session") === "true";
+        if (isGuest) {
+          setUser({
+            uid: "guest-user",
+            displayName: "Guest Scholar",
+            email: "guest@purgiportal.org",
+            photoURL: null
+          } as any);
+          
+          const saved = localStorage.getItem("balti_purik_learner_progress");
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              setProgress({ ...parsed, isPro: true });
+            } catch (jsonErr) {
+              console.error("Failed parsing cached local progress:", jsonErr);
+            }
+          }
+        } else {
+          setUser(null);
+        }
       }
       setAuthLoading(false);
     });
@@ -188,11 +208,48 @@ export default function App() {
 
   const handleSignOut = async () => {
     try {
+      localStorage.removeItem("balti_purik_guest_session");
       await signOut(auth);
       setSelectedLesson(null);
       setActiveTab("dashboard");
     } catch (e) {
       console.error("Sign-out failed:", e);
+    }
+  };
+
+  const handleLoginAsGuest = () => {
+    localStorage.setItem("balti_purik_guest_session", "true");
+    setUser({
+      uid: "guest-user",
+      displayName: "Guest Scholar",
+      email: "guest@purgiportal.org",
+      photoURL: null
+    } as any);
+    
+    const saved = localStorage.getItem("balti_purik_learner_progress");
+    if (!saved) {
+      const initialProgress: UserProgress = {
+        completedLessons: [],
+        completedSteps: {},
+        bookmarks: [],
+        streak: 3,
+        points: 120,
+        badges: ["badge-first-steps"],
+        name: "Guest Scholar",
+        avatar: "🎓",
+        dialectPreference: "purigi",
+        level: 1,
+        isPro: true
+      };
+      setProgress(initialProgress);
+      localStorage.setItem("balti_purik_learner_progress", JSON.stringify(initialProgress));
+    } else {
+      try {
+        const parsed = JSON.parse(saved);
+        setProgress({ ...parsed, isPro: true });
+      } catch (e) {
+        console.error("Failed to parse cached progress during guest login:", e);
+      }
     }
   };
 
@@ -351,7 +408,7 @@ export default function App() {
   }
 
   if (!user) {
-    return <LoginScreen />;
+    return <LoginScreen onLoginAsGuest={handleLoginAsGuest} />;
   }
 
   return (
