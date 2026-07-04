@@ -233,10 +233,6 @@ export default function DictionaryView({
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  if (!isPro) {
-                    onNavigateToUpgrade();
-                    return;
-                  }
                   setShowSuggestForm(!showSuggestForm);
                   setIsAdminMode(false);
                 }}
@@ -246,7 +242,7 @@ export default function DictionaryView({
                     : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
                 }`}
               >
-                <PlusCircle className="w-4 h-4" /> Suggest Missing Word {!isPro && "👑"}
+                <PlusCircle className="w-4 h-4" /> Suggest Missing Word
               </button>
               
               <button

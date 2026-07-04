@@ -17,16 +17,16 @@ interface PurgiWord {
 
 const CAROUSEL_WORDS: PurgiWord[] = [
   {
-    word: "Khamzang",
-    tibetanScript: "ཁམས་བཟང་།",
-    persoArabicScript: "خمزنگ",
-    ipa: "/kʰam.zaŋ/",
-    meaning: "Wellbeing / Greeting (How are you?)",
-    definition: "The traditional Purgi greeting signifying 'May you be well and in peaceful elements'.",
+    word: "Salam",
+    tibetanScript: "སལམ།",
+    persoArabicScript: "سلام",
+    ipa: "/sa.lam/",
+    meaning: "Greeting / Hello (Peace)",
+    definition: "The modern and widely used greeting across Kargil today, representing respect and peace.",
     gradient: "from-rose-500 via-pink-500 to-orange-400",
     accentColor: "rose",
-    example: "Khamzang ley, aba?",
-    translation: "Are you well, respected father?"
+    example: "Salam ley, aba?",
+    translation: "Peace and greetings, respected father!"
   },
   {
     word: "Zan",

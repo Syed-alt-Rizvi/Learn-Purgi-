@@ -11,6 +11,19 @@ import ExternalCoursesCatalog from "./components/ExternalCoursesCatalog";
 import AccountSection from "./components/AccountSection";
 import DynamicWordCarousel from "./components/DynamicWordCarousel";
 import BookmarksSection from "./components/BookmarksSection";
+import AdSenseUnit from "./components/AdSenseUnit";
+import { 
+  auth, 
+  db, 
+  onAuthStateChanged, 
+  signOut, 
+  doc, 
+  getDoc, 
+  setDoc,
+  FirebaseUser 
+} from "./lib/firebase";
+import LoginScreen from "./components/LoginScreen";
+import { LogOut } from "lucide-react";
 import {
   Trophy,
   Flame,
@@ -42,7 +55,7 @@ const PURGI_WISDOM = [
 ];
 
 export default function App() {
-  // 1. Core user progress state (loaded/saved to LocalStorage for offline-first support)
+  // 1. Core user progress state (initialized with placeholders, loaded securely from Google servers)
   const [progress, setProgress] = useState<UserProgress>({
     completedLessons: [],
     completedSteps: {},
@@ -50,11 +63,16 @@ export default function App() {
     streak: 3, // starting with a nice realistic streak
     points: 120,
     badges: ["badge-first-steps"],
-    name: "Murtaza",
+    name: "Learner",
     avatar: "🎓",
     dialectPreference: "purigi",
-    level: 1
+    level: 1,
+    isPro: true
   });
+
+  // Firebase auth state
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
@@ -63,17 +81,17 @@ export default function App() {
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [soundPlaying, setSoundPlaying] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentTimeGreeting, setCurrentTimeGreeting] = useState("Khamzang 🏔️");
+  const [currentTimeGreeting, setCurrentTimeGreeting] = useState("Salam 🏔️");
   const [wisdomIndex, setWisdomIndex] = useState(0);
 
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
-      setCurrentTimeGreeting("Sngatmo khamzang (Good morning) ☀️");
+      setCurrentTimeGreeting("Sngatmo Salam (Good morning) ☀️");
     } else if (hour < 17) {
-      setCurrentTimeGreeting("Piltiqi khamzang (Good afternoon) 🌤️");
+      setCurrentTimeGreeting("Piltiqi Salam (Good afternoon) 🌤️");
     } else {
-      setCurrentTimeGreeting("Phitseki khamzang (Good evening) 🌙");
+      setCurrentTimeGreeting("Phitseki Salam (Good evening) 🌙");
     }
     // Select a random wisdom index on mount
     setWisdomIndex(Math.floor(Math.random() * PURGI_WISDOM.length));
@@ -95,22 +113,87 @@ export default function App() {
     }
   };
 
+  // Google servers Auth & Firestore Synchronization
   useEffect(() => {
-    const saved = localStorage.getItem("balti_purik_learner_progress");
-    if (saved) {
-      try {
-        setProgress(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse local learner progress:", e);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        
+        try {
+          const userDocRef = doc(db, "users", firebaseUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          
+          if (userDocSnap.exists()) {
+            const serverProgress = userDocSnap.data() as UserProgress;
+            const updated = { ...serverProgress, isPro: true };
+            setProgress(updated);
+            localStorage.setItem("balti_purik_learner_progress", JSON.stringify(updated));
+          } else {
+            // First login, initialize secure user space on Google servers
+            const initialProgress: UserProgress = {
+              completedLessons: [],
+              completedSteps: {},
+              bookmarks: [],
+              streak: 3,
+              points: 120,
+              badges: ["badge-first-steps"],
+              name: firebaseUser.displayName || "Learner",
+              avatar: "🎓",
+              dialectPreference: "purigi",
+              level: 1,
+              isPro: true
+            };
+            setProgress(initialProgress);
+            localStorage.setItem("balti_purik_learner_progress", JSON.stringify(initialProgress));
+            await setDoc(userDocRef, initialProgress);
+          }
+        } catch (err) {
+          console.error("Failed to load user profile from Google servers:", err);
+          // Try loading offline backup
+          const saved = localStorage.getItem("balti_purik_learner_progress");
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              setProgress({ ...parsed, isPro: true });
+            } catch (jsonErr) {
+              console.error("Failed parsing cached local progress:", jsonErr);
+            }
+          }
+        }
+      } else {
+        setUser(null);
       }
-    }
+      setAuthLoading(false);
+    });
+
     fetchDictionary();
+    return () => unsubscribe();
   }, []);
 
-  // Save progress changes
-  const saveProgress = (newProgress: UserProgress) => {
-    setProgress(newProgress);
-    localStorage.setItem("balti_purik_learner_progress", JSON.stringify(newProgress));
+  // Save changes to local state, browser cache, and Google servers
+  const saveProgress = async (newProgress: UserProgress) => {
+    const updatedProgress = { ...newProgress, isPro: true };
+    setProgress(updatedProgress);
+    localStorage.setItem("balti_purik_learner_progress", JSON.stringify(updatedProgress));
+    
+    if (auth.currentUser) {
+      try {
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        await setDoc(userDocRef, updatedProgress);
+      } catch (err) {
+        console.error("Failed syncing progress to Google servers:", err);
+      }
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      setSelectedLesson(null);
+      setActiveTab("dashboard");
+    } catch (e) {
+      console.error("Sign-out failed:", e);
+    }
   };
 
   const handleEarnPoints = (pts: number) => {
@@ -258,6 +341,19 @@ export default function App() {
     { id: "profile", label: "My Account & Settings", icon: User }
   ];
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 font-sans">
+        <div className="h-10 w-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4" />
+        <span className="text-xs font-bold text-slate-400">Loading your profile from Google servers...</span>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginScreen />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex font-sans" id="applet-viewport">
       {/* 1. Desktop Sidebar Navigation */}
@@ -275,9 +371,18 @@ export default function App() {
         {/* User Card */}
         <div className="p-4 border-b border-slate-800 bg-slate-950/40">
           <div className="flex items-center gap-3">
-            <span className="text-2xl bg-slate-800 p-2 rounded-xl shrink-0 shadow-sm">{progress.avatar}</span>
-            <div>
-              <span className="text-xs font-bold text-white block truncate max-w-32">{progress.name}</span>
+            {user?.photoURL ? (
+              <img 
+                src={user.photoURL} 
+                alt={user.displayName || "User"} 
+                className="w-10 h-10 rounded-xl object-cover shrink-0 shadow-sm border border-slate-850"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="text-2xl bg-slate-800 p-2 rounded-xl shrink-0 shadow-sm">{progress.avatar}</span>
+            )}
+            <div className="min-w-0 flex-1">
+              <span className="text-xs font-bold text-white block truncate">{progress.name}</span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="text-[10px] font-bold text-emerald-400 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded">
                   LVL {progress.level}
@@ -314,8 +419,18 @@ export default function App() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-800 text-[10px] text-slate-500 text-center font-semibold">
-          Preserving Himalayan Oral Legacies
+        {/* Sidebar Sign Out button at the bottom */}
+        <div className="p-3 border-t border-slate-800 flex flex-col gap-2">
+          <button
+            onClick={handleSignOut}
+            className="w-full py-2 bg-slate-950 hover:bg-red-950/60 hover:text-red-400 text-slate-400 font-bold text-[11px] rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer border border-slate-800/80"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Sign Out Account
+          </button>
+          <div className="text-[9px] text-slate-600 text-center font-bold">
+            Preserving Himalayan Oral Legacies
+          </div>
         </div>
       </aside>
 
@@ -487,6 +602,9 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+            {/* Google AdSense Unit */}
+            <AdSenseUnit slot="dashboard-bottom" />
           </div>
         )}
 
@@ -846,6 +964,9 @@ export default function App() {
               onUpdatePreference={(dialectPreference) => saveProgress({ ...progress, dialectPreference })}
               onClearProgress={handleClearProgress}
               onUpgradePro={(isPro) => saveProgress({ ...progress, isPro })}
+              userEmail={user?.email || ""}
+              userPhotoUrl={user?.photoURL || ""}
+              onSignOut={handleSignOut}
             />
           </div>
         )}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageSquare, Send, Sparkles, User, Loader2, ArrowUpRight, ShieldCheck, Crown } from "lucide-react";
+import { MessageSquare, Send, Sparkles, User, Loader2, ArrowUpRight, ShieldCheck, Crown, Check } from "lucide-react";
 
 interface AiTutorCoachProps {
   onEarnPoints: (pts: number) => void;
@@ -17,9 +17,10 @@ export default function AiTutorCoach({
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([
     {
       role: 'assistant',
-      content: `Khamzang thuk! Welcome! I am your native Kargili Purki/Purgi language tutor. While I can assist with both Balti and Purgi dialects, my lessons and guidance are highly optimized and primarily designed for learning and preserving the Kargili form of Purgi language.
+      content: `Salam! Welcome! I am your native Kargili Purki/Purgi language tutor. While I can assist with both Balti and Purgi dialects, my lessons and guidance are highly optimized and primarily designed for learning and preserving the Kargili form of Purgi language.
       
 I can help you translate phrases, master difficult archaic consonant clusters (like *skar-ma* or *zla-ba*), learn case suffixes, or hold a practice conversation! 
+
 
 What would you like to learn today? You can select a quick starter prompt below or type your own question.`
     }
@@ -43,12 +44,6 @@ What would you like to learn today? You can select a quick starter prompt below 
 
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim() || loading) return;
-
-    // Gate for Free user limit (Limit to 1 message exchange, which results in assistant greeting, user first msg, assistant reply)
-    if (!isPro && messages.length >= 3) {
-      onNavigateToUpgrade();
-      return;
-    }
 
     const newMessages = [...messages, { role: 'user' as const, content: textToSend }];
     setMessages(newMessages);
@@ -82,10 +77,6 @@ What would you like to learn today? You can select a quick starter prompt below 
   };
 
   const handleStarterPromptClick = (prompt: string) => {
-    if (!isPro && messages.length >= 3) {
-      onNavigateToUpgrade();
-      return;
-    }
     handleSendMessage(prompt);
   };
 
@@ -105,15 +96,9 @@ What would you like to learn today? You can select a quick starter prompt below 
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {isPro ? (
-            <span className="text-[9px] uppercase font-black text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md flex items-center gap-0.5">
-              <Crown className="w-3 h-3 fill-current" /> Pro Tutor
-            </span>
-          ) : (
-            <span className="text-[9px] uppercase font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
-              Free Trial
-            </span>
-          )}
+          <span className="text-[9px] uppercase font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-0.5">
+            <Check className="w-3 h-3 text-emerald-600" /> Free Unlimited Access
+          </span>
           <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
             Active Tutor: {dialectPreference === "both" ? "Dual Dialect" : dialectPreference === "balti" ? "Balti" : "Purigi"}
           </span>
@@ -184,45 +169,26 @@ What would you like to learn today? You can select a quick starter prompt below 
         </div>
       )}
 
-      {/* Input controls / Pro banner gate */}
-      {!isPro && messages.length >= 3 ? (
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 mt-2 animate-fadeIn">
-          <div className="space-y-1">
-            <span className="text-xs font-black text-amber-800 flex items-center gap-1">
-              <Crown className="w-3.5 h-3.5 fill-current text-amber-500" /> Premium Conversation Coach Required
-            </span>
-            <p className="text-[11px] text-slate-500 max-w-sm leading-normal">
-              Your free trial conversation has ended. Settle just INR 650 to unlock infinite expert AI tutoring, grammar feedback, dialect studies, and certificate prints.
-            </p>
-          </div>
-          <button
-            onClick={onNavigateToUpgrade}
-            className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow-xs transition-all hover:opacity-90 shrink-0 cursor-pointer"
-          >
-            Unlock Pro Version
-          </button>
-        </div>
-      ) : (
-        <div className="border-t border-slate-100 pt-4 flex gap-2.5">
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage(userInput)}
-            placeholder="Ask anything or practice conversational phrases..."
-            className="flex-1 p-3 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-sans"
-            id="chat-user-input"
-          />
-          <button
-            onClick={() => handleSendMessage(userInput)}
-            disabled={!userInput.trim() || loading}
-            className="p-3 bg-emerald-950 hover:bg-emerald-900 text-white rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
-            id="chat-send-btn"
-          >
-            <Send className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+      {/* Input controls */}
+      <div className="border-t border-slate-100 pt-4 flex gap-2.5">
+        <input
+          type="text"
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage(userInput)}
+          placeholder="Ask anything or practice conversational phrases..."
+          className="flex-1 p-3 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-sans"
+          id="chat-user-input"
+        />
+        <button
+          onClick={() => handleSendMessage(userInput)}
+          disabled={!userInput.trim() || loading}
+          className="p-3 bg-emerald-950 hover:bg-emerald-900 text-white rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+          id="chat-send-btn"
+        >
+          <Send className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }

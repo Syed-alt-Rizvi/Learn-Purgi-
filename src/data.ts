@@ -13,16 +13,16 @@ export const LESSONS: Lesson[] = [
       {
         id: "greet-step-1",
         type: "content",
-        title: "The Universal Greeting: Khamzang",
-        text: `In the Kargili Purgi (Purki) language, greetings are deeply respectful. The universal phrase is **Khamzang** (sometimes spoken as *Khamzang thuk*).
+        title: "The Universal Greeting: Salam",
+        text: `In the Kargili Purgi (Purki) language, greetings are deeply respectful. The universal and widely used greeting today across Kargil is **Salam**.
 
-Literally meaning **"Good health/state"** (derived from Classical Tibetan *kham* "element/health" + *zangpo* "good"), this is the most common way to greet anyone in the Kargil region.
+Derived from the Arabic/Perso-Arabic word for peace, **"Salam"** is the most common way to greet anyone in the Kargil region.
 
 To show deep respect, or when greeting elders, we say:
-**"Khamzang thuk!"**
+**"Salam ley!"** or **"Salam alaykum!"**
 
 Alternatively, similar to Ladakhi, **"Joo"** or **"Joo joo"** is widely used in daily Kargili life as a versatile greeting, thank you, and farewell.`,
-        audioText: "Khamzang thuk"
+        audioText: "Salam ley"
       },
       {
         id: "greet-step-2",
@@ -31,15 +31,15 @@ Alternatively, similar to Ladakhi, **"Joo"** or **"Joo joo"** is widely used in 
         vocabItems: [
           {
             id: "vocab-khamzang",
-            word: "Khamzang",
-            tibetanScript: "ཁམས་བཟང་།",
-            persoArabicScript: "خمزنگ",
-            ipa: "/kʰam.zaŋ/",
-            meaning: "Hello / Good morning / Well-being",
-            urduMeaning: "سلام / خیریت",
+            word: "Salam",
+            tibetanScript: "སལམ།",
+            persoArabicScript: "سلام",
+            ipa: "/sa.lam/",
+            meaning: "Hello / Universal Greeting",
+            urduMeaning: "سلام",
             category: "Greetings",
             dialect: "both",
-            notes: "Universal greeting. Derived from Old Tibetan khams (health) + bzang (good)."
+            notes: "Universal greeting. The most widely used greeting across Kargil today representing respect and peace."
           },
           {
             id: "vocab-joo",
@@ -67,12 +67,12 @@ Alternatively, similar to Ladakhi, **"Joo"** or **"Joo joo"** is widely used in 
           },
           {
             id: "vocab-khamzang-yod",
-            word: "Khamzang yod",
-            tibetanScript: "ཁམས་བཟང་ཡོད།",
-            persoArabicScript: "خمزنگ یود",
-            ipa: "/kʰam.zaŋ jod/",
+            word: "Salamath yod",
+            tibetanScript: "སལཱ་མཐ་ཡོད།",
+            persoArabicScript: "سلامت یود",
+            ipa: "/sa.la.mat jod/",
             meaning: "I am fine / I am well",
-            urduMeaning: "میں ٹھیک ہوں",
+            urduMeaning: "میں ٹھیک ہوں / سلامت ہوں",
             category: "Greetings",
             dialect: "both",
             notes: "Standard reply. 'yod' is the auxiliary verb for presence."
@@ -83,15 +83,15 @@ Alternatively, similar to Ladakhi, **"Joo"** or **"Joo joo"** is widely used in 
         id: "greet-step-3",
         type: "quiz",
         title: "Greetings Quick Check",
-        quizQuestion: "What is the historical Tibetan meaning of the greeting 'Khamzang'?",
+        quizQuestion: "What is the widely used greeting word across Kargil today?",
         quizOptions: [
-          "May the sun shine on you",
-          "Good health / Elements in good state",
-          "Welcome to our home",
-          "Go in peace"
+          "Joolay only",
+          "Salam",
+          "Tashi Delek",
+          "Namaste"
         ],
         quizAnswer: 1,
-        quizExplanation: "Derived from Old Tibetan 'khams' (health/elements of the body) and 'bzang' (excellent/good)."
+        quizExplanation: "Salam is widely used today to greet in Kargil representing peace and respect."
       }
     ]
   },
@@ -275,8 +275,8 @@ However, **Kargili Purgi (Purki) is non-tonal** and speaks these archaic consona
         title: "Polite Dialogue",
         text: `Let's see how two speakers meet for the first time in Baltistan or Kargil:
 
-**Speaker A:** Khamzang thuk! (*Hello!*)
-**Speaker B:** Khamzang! (*Hello!*)
+**Speaker A:** Salam ley! (*Hello!*)
+**Speaker B:** Salam! (*Hello!*)
 
 **Speaker A:** Nyeri ming-la chi in? (*What is your name? - Polite*)
 **Speaker B:** Nga-i ming Ali in. Khyang-gi ming chi in? (*My name is Ali. What is your name?*)
@@ -348,19 +348,19 @@ However, **Kargili Purgi (Purki) is non-tonal** and speaks these archaic consona
 
 export const DICTIONARY: DictionaryEntry[] = [
   {
-    id: "dict-khamzang",
-    word: "Khamzang",
-    tibetanScript: "ཁམས་བཟང་།",
-    persoArabicScript: "خمزنگ",
-    ipa: "/kʰam.zaŋ/",
-    meaning: "Greetings, well-being, safe and sound, peaceful",
-    urduMeaning: "سلام، سلامتی، خیریت",
-    partOfSpeech: "Noun / Interjection",
+    id: "dict-salam",
+    word: "Salam",
+    tibetanScript: "སལམ།",
+    persoArabicScript: "سلام",
+    ipa: "/sa.lam/",
+    meaning: "Greetings, peace, hello",
+    urduMeaning: "سلام",
+    partOfSpeech: "Interjection",
     dialect: "common",
-    definition: "An ancient greeting term shared across Balti, Purigi, and Ladakhi. Translates to 'in good health/elements'. Used to wish peace or check someone's condition.",
-    exampleSentence: "Khamzang yod-a, Aba?",
-    exampleTranslation: "Are you well, Father?",
-    etymology: "From Old Tibetan 'khams' (physical health) + 'bzang' (fine/virtuous)."
+    definition: "The primary and most widely used greeting term across Kargil today, representing peace, respect, and standard greeting in daily social life.",
+    exampleSentence: "Salam ley, Aba?",
+    exampleTranslation: "Greetings and peace, Father?",
+    etymology: "Borrowed from Arabic/Perso-Arabic 'Salam' (peace), integrated as the default greeting in modern Kargili Purigi."
   },
   {
     id: "dict-joo",

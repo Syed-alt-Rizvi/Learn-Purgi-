@@ -28,6 +28,9 @@ interface AccountSectionProps {
   onUpdatePreference: (pref: 'balti' | 'purigi' | 'both') => void;
   onClearProgress: () => void;
   onUpgradePro: (status: boolean) => void;
+  userEmail?: string;
+  userPhotoUrl?: string;
+  onSignOut?: () => void;
 }
 
 export default function AccountSection({
@@ -36,7 +39,10 @@ export default function AccountSection({
   onUpdateAvatar,
   onUpdatePreference,
   onClearProgress,
-  onUpgradePro
+  onUpgradePro,
+  userEmail = "",
+  userPhotoUrl = "",
+  onSignOut
 }: AccountSectionProps) {
   const [editingName, setEditingName] = useState(progress.name);
   const [offlineCached, setOfflineCached] = useState(false);
@@ -71,12 +77,12 @@ export default function AccountSection({
     }, 600);
   };
 
-  // UPI deep link generation (Masked in UI text, real in actions/QR)
-  const upiIdRaw = "9906275833@superyes";
-  const upiIdMasked = "99062*****@superyes";
+  // UPI deep link generation (Fully unmasked & verified as the official revenue account)
+  const upiIdRaw = "Syedmurtazarazavee@gmail.com";
+  const upiIdAlternative = "9906275833@superyes";
   const upiPayeeName = "Syed Murtaza Rizvi";
-  const upiAmount = "650";
-  const upiNote = "Purgi Portal Pro scholar upgrade";
+  const upiAmount = "500"; // Suggested support amount
+  const upiNote = "Support Kargil Purgi Education Portal";
   
   // Real UPI payment URL
   const upiUrl = `upi://pay?pa=${upiIdRaw}&pn=${encodeURIComponent(upiPayeeName)}&am=${upiAmount}&cu=INR&tn=${encodeURIComponent(upiNote)}`;
@@ -186,69 +192,38 @@ export default function AccountSection({
   return (
     <div className="space-y-8" id="profile-settings-section">
       
-      {/* Top Banner: Subscription Tier */}
-      <div className="bg-slate-900 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-slate-800 shadow-sm">
+      {/* Top Banner: Free Unlocked Tier & Optional Support */}
+      <div className="bg-gradient-to-r from-slate-900 to-emerald-950 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-slate-800 shadow-sm">
         <div className="absolute right-0 bottom-0 translate-x-8 translate-y-8 opacity-10 pointer-events-none">
-          <Crown className="w-64 h-64 text-yellow-400" />
+          <Crown className="w-64 h-64 text-emerald-400" />
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🏆</span>
-              <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full flex items-center gap-1">
-                Academic Tier Status
+              <span className="text-2xl">🎓</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1 rounded-full flex items-center gap-1">
+                Free Academic Access Unlocked
               </span>
             </div>
             
-            {progress.isPro ? (
-              <div className="mt-3">
-                <h2 className="text-2xl font-black text-amber-300 tracking-tight flex items-center gap-2 font-sans">
-                  <Crown className="w-6 h-6 text-amber-400 fill-current" /> Pro Scholar Account
-                </h2>
-                <p className="text-slate-300 text-xs mt-1 leading-relaxed max-w-xl">
-                  Thank you! Your account is fully unlocked with Pro Scholar status. You have active permissions to suggest missing terms, access specialized AI coaching modules, and download premium learning resources.
-                </p>
-              </div>
-            ) : (
-              <div className="mt-3">
-                <h2 className="text-2xl font-black text-slate-200 tracking-tight font-sans">
-                  Free Learner Account
-                </h2>
-                <p className="text-slate-300 text-xs mt-1 leading-relaxed max-w-xl">
-                  Upgrade to the **Pro Version** for INR 650 to unlock premium features like suggesting and adding words to the Comparative Dictionary, advanced AI interactive conversation tutors, and downloading personalized academic transcripts.
-                </p>
-              </div>
-            )}
+            <div className="mt-3">
+              <h2 className="text-2xl font-black text-emerald-300 tracking-tight flex items-center gap-2 font-sans">
+                <Check className="w-6 h-6 text-emerald-400" /> Unrestricted Access
+              </h2>
+              <p className="text-slate-300 text-xs mt-1 leading-relaxed max-w-xl font-sans">
+                To preserve the precious endangered dialects of Kargil (Purigi) and Baltistan, Syed Murtaza Rizvi has made the entire educational suite 100% free. Enjoy infinite AI coaching, unhindered dictionary submissions, and download your free academic certificates!
+              </p>
+            </div>
           </div>
 
-          <div className="shrink-0 flex gap-3">
-            {!progress.isPro ? (
-              <>
-                <button
-                  onClick={() => setShowPayModal(true)}
-                  className="px-6 py-3 bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-slate-950 font-black rounded-xl text-xs shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
-                >
-                  <Crown className="w-4 h-4 fill-current" /> Upgrade to Pro (INR 650)
-                </button>
-                <button
-                  onClick={handleDirectDemoUnlock}
-                  className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition-all border border-slate-700"
-                >
-                  Sandbox Instant Unlock
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  onUpgradePro(false);
-                  alert("Switched back to Free version for previewing.");
-                }}
-                className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition-all border border-slate-700"
-              >
-                Downgrade to Free (Demo)
-              </button>
-            )}
+          <div className="shrink-0 flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => setShowPayModal(true)}
+              className="px-6 py-3 bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-slate-950 font-black rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer font-sans"
+            >
+              💝 Support Portal (Optional Donation)
+            </button>
           </div>
         </div>
       </div>
@@ -357,6 +332,40 @@ export default function AccountSection({
                 </div>
               )}
             </form>
+          </div>
+
+          {/* Google Account Synced Info */}
+          <div className="bg-slate-900 rounded-2xl p-5 border border-slate-800 text-white space-y-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-200">Google Cloud Synced</h4>
+            </div>
+            
+            <div className="flex items-center gap-3 bg-slate-950/50 p-3 rounded-xl border border-slate-850">
+              {userPhotoUrl ? (
+                <img 
+                  src={userPhotoUrl} 
+                  alt="Google User" 
+                  className="w-9 h-9 rounded-lg object-cover border border-slate-800"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-md">👤</div>
+              )}
+              <div className="min-w-0 flex-1">
+                <span className="text-[11px] font-bold text-slate-150 block truncate">{userEmail || "Google Account Connected"}</span>
+                <span className="text-[9px] text-emerald-400 font-extrabold block uppercase tracking-wider mt-0.5">Cloud Database Active</span>
+              </div>
+            </div>
+
+            {onSignOut && (
+              <button
+                onClick={onSignOut}
+                className="w-full py-2 bg-slate-800 hover:bg-red-950/80 hover:text-red-400 text-slate-300 font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-1 cursor-pointer border border-slate-750"
+              >
+                Sign Out Google Account
+              </button>
+            )}
           </div>
 
           {/* Reset progress */}
@@ -537,7 +546,7 @@ export default function AccountSection({
         </div>
       </div>
 
-      {/* Payment / Upgrade Modal (Highly detailed & compliant) */}
+      {/* Payment / Support Modal */}
       {showPayModal && (
         <div className="fixed inset-0 bg-slate-950/70 z-50 flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
           <div className="bg-white rounded-3xl w-full max-w-xl p-6 md:p-8 shadow-2xl border border-slate-100 relative animate-scaleUp max-h-[90vh] overflow-y-auto">
@@ -545,8 +554,8 @@ export default function AccountSection({
             {/* Modal Header */}
             <div className="border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <Crown className="w-5 h-5 text-amber-500 fill-current" />
-                <h3 className="text-lg font-black text-slate-800 font-sans tracking-tight">Purgi Pro Scholar Subscription</h3>
+                <span className="text-xl">💝</span>
+                <h3 className="text-lg font-black text-slate-800 font-sans tracking-tight">Support Kargili Linguistic Heritage</h3>
               </div>
               <button
                 onClick={() => {
@@ -566,9 +575,9 @@ export default function AccountSection({
                   <Check className="w-8 h-8 font-black" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-extrabold text-emerald-800">Payment Verified!</h4>
+                  <h4 className="text-xl font-extrabold text-emerald-800">Invaluable Support Received!</h4>
                   <p className="text-xs text-emerald-600 mt-1 max-w-xs mx-auto leading-relaxed">
-                    Thank you! Your transaction reference has been registered. Your account is now fully elevated to **Purgi Pro Scholar**!
+                    Thank you! Your reference details have been dispatch-registered. We deeply appreciate your commitment to preserving the oral and written legacies of Kargil.
                   </p>
                 </div>
                 <button
@@ -579,27 +588,27 @@ export default function AccountSection({
                   }}
                   className="px-6 py-2.5 bg-slate-900 text-white text-xs font-extrabold rounded-xl hover:bg-slate-800 transition-all"
                 >
-                  Enter Portal as Pro
+                  Return to Portal
                 </button>
               </div>
             ) : (
               <div className="space-y-6">
                 
-                {/* Intro pricing and masked UPI info */}
+                {/* Voluntary contribution tier info */}
                 <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl flex justify-between items-center">
                   <div>
-                    <span className="text-[9px] uppercase font-black text-emerald-700 bg-emerald-100/50 px-2.5 py-0.5 rounded-md">Life-time Access</span>
-                    <h4 className="text-sm font-extrabold text-slate-800 mt-1.5">Pro Scholar Plan</h4>
-                    <p className="text-xs text-slate-500 mt-0.5">Masked Payee UPI ID: <strong className="font-mono">{upiIdMasked}</strong></p>
+                    <span className="text-[9px] uppercase font-black text-emerald-700 bg-emerald-100/50 px-2.5 py-0.5 rounded-md">Voluntary Contribution</span>
+                    <h4 className="text-sm font-extrabold text-slate-800 mt-1.5">Preservation Donor</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">Payee UPI ID: <strong className="font-mono">{upiIdRaw}</strong></p>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block font-semibold line-through">INR 1,200</span>
-                    <span className="text-xl font-black text-slate-800 block">INR 650</span>
+                    <span className="text-[10px] text-slate-400 block font-semibold">Suggested</span>
+                    <span className="text-xl font-black text-emerald-700 block">INR {upiAmount}</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  To complete payment, please scan the QR code below or click the app router button to open any UPI-enabled mobile app (such as Google Pay, PhonePe, Paytm, or BHIM) to settle **INR 650** to director Syed Murtaza Rizvi.
+                <p className="text-xs text-slate-500 leading-relaxed font-sans">
+                  The portal operates entirely free of charge. If you find value in these digitized resources, dictionaries, and AI interactive scripts, consider sending a voluntary donation to fund server operation and continuous community lessons. Scan the code below or pay via any UPI application (GPay, PhonePe, Paytm, BHIM) to our revenue account.
                 </p>
 
                 {/* QR Code and Direct App Link */}
@@ -616,27 +625,27 @@ export default function AccountSection({
                       />
                     </div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block flex items-center justify-center gap-1">
-                      <QrCode className="w-3.5 h-3.5" /> Scan QR to Pay
+                      <QrCode className="w-3.5 h-3.5" /> Scan QR to Settle
                     </span>
                   </div>
 
                   {/* App Deep link button */}
                   <div className="space-y-3">
-                    <div className="bg-white border border-slate-200 p-4 rounded-xl space-y-1.5">
+                    <div className="bg-white border border-slate-200 p-4 rounded-xl space-y-1.5 text-left">
                       <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider block">Payee Identity</span>
                       <span className="text-xs font-bold text-slate-800 block">{upiPayeeName}</span>
-                      <span className="text-[10px] font-mono text-slate-400 block">{upiIdMasked}</span>
+                      <span className="text-[10px] font-mono text-slate-500 block break-all">{upiIdRaw}</span>
                     </div>
 
                     <a
                       href={upiUrl}
                       className="w-full py-3 bg-emerald-950 hover:bg-emerald-900 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm"
                     >
-                      <Smartphone className="w-4 h-4" /> Settle in UPI App <ExternalLink className="w-3 h-3" />
+                      <Smartphone className="w-4 h-4" /> Open UPI App <ExternalLink className="w-3 h-3" />
                     </a>
                     
                     <p className="text-[9px] text-slate-400 text-center leading-normal">
-                      Deep-link opens Google Pay, Paytm, BHIM, or PhonePe on supported mobile environments.
+                      Deep-link launches payment apps on mobile devices.
                     </p>
                   </div>
                 </div>
@@ -644,11 +653,10 @@ export default function AccountSection({
                 {/* Submitting Reference verification */}
                 <form onSubmit={handleVerifyPayment} className="space-y-3.5 border-t border-slate-100 pt-5">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Enter 12-Digit UPI Transaction Ref / UTR ID</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Enter 12-Digit Transaction Ref / UTR ID (Optional Registration)</label>
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        required
                         value={upiRefId}
                         onChange={(e) => setUpiRefId(e.target.value.replace(/\D/g, "").slice(0, 12))}
                         placeholder="e.g. 120495837264"
@@ -659,21 +667,16 @@ export default function AccountSection({
                         disabled={simulatingPayment || upiRefId.length < 8}
                         className="px-5 py-2.5 bg-slate-900 text-white text-xs font-extrabold rounded-xl hover:bg-slate-800 disabled:opacity-40 transition-all cursor-pointer shrink-0"
                       >
-                        {simulatingPayment ? "Verifying..." : "Verify Ref"}
+                        {simulatingPayment ? "Registering..." : "Register Ref"}
                       </button>
                     </div>
                   </div>
                 </form>
 
-                {/* Demo immediate access warning */}
+                {/* Supporting Info */}
                 <div className="flex justify-between items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100">
-                  <span>Settle securely to {upiIdMasked}</span>
-                  <button
-                    onClick={handleDirectDemoUnlock}
-                    className="text-emerald-700 font-extrabold hover:underline"
-                  >
-                    Skip & Instantly Activate Pro for testing (Demo bypass)
-                  </button>
+                  <span>Payee UPI: {upiIdRaw}</span>
+                  <span className="text-emerald-700 font-extrabold">Active Preservation Supporter</span>
                 </div>
               </div>
             )}

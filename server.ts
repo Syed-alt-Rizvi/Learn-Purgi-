@@ -46,11 +46,11 @@ app.post("/api/translate", async (req, res) => {
     // Elegant fallbacks if Gemini API Key is missing, to ensure application never crashes and still works beautifully
     const mockTranslations: { [key: string]: any } = {
       "hello": {
-        translation: "Khamzang",
-        tibetanScript: "ཁམས་བཟང་།",
-        persoArabicScript: "خمزنگ",
-        phoneticBreakdown: "Kham-zang (kh- aspirated, z- voiced)",
-        grammarNotes: "Traditional respectful greeting used in both Balti and Purik. Literally translates as 'Good state/health'."
+        translation: "Salam",
+        tibetanScript: "སལམ།",
+        persoArabicScript: "سلام",
+        phoneticBreakdown: "Sa-lam",
+        grammarNotes: "The widely used modern greeting across Kargil today. Borrowed from Arabic/Perso-Arabic representing peace and respect."
       },
       "thank you": {
         translation: "Joo",
@@ -95,9 +95,9 @@ app.post("/api/translate", async (req, res) => {
     const simulatedWord = text.split(" ").map((w: string) => w + "s").join(" ");
     return res.json({
       success: true,
-      translation: `Khamzang ${text}`,
-      tibetanScript: "ཁམས་བཟང་།",
-      persoArabicScript: "خمزنگ",
+      translation: `Salam ${text}`,
+      tibetanScript: "སལམ།",
+      persoArabicScript: "سلام",
       phoneticBreakdown: `Pronounced: [${simulatedWord}] with typical Tibeto-Burman consonant stress.`,
       grammarNotes: "Simulated response (Configure GEMINI_API_KEY in secrets for live high-precision translation). Balti and Purik retain classical Tibetan structures.",
       isSimulated: true
@@ -151,7 +151,7 @@ app.post("/api/chat", async (req, res) => {
   if (!ai) {
     // Offline / Simulated AI Coach
     const lastUserMessage = messages[messages.length - 1]?.content?.toLowerCase() || "";
-    let reply = "Khamzang! I am your Kargili Purki/Purgi language coach. Since the Gemini API key is not fully loaded in the environment right now, I am running in local offline tutorial mode. Let's practice! Ask me about: 'noun suffixes', 'pronouns', or try typing 'hello' or 'thank you'.";
+    let reply = "Salam! I am your Kargili Purki/Purgi language coach. Since the Gemini API key is not fully loaded in the environment right now, I am running in local offline tutorial mode. Let's practice! Ask me about: 'noun suffixes', 'pronouns', or try typing 'hello' or 'thank you'.";
     
     if (lastUserMessage.includes("yang thik yota") || lastUserMessage.includes("yang thik yot-a") || lastUserMessage.includes("are you fine")) {
       reply = `**Translation: Are you fine?**
@@ -167,7 +167,7 @@ Would you like to try replying with "Yang thik yod" (I am fine too)?`;
     } else if (lastUserMessage.includes("suffix") || lastUserMessage.includes("case")) {
       reply = "In Kargili Purki/Purgi, nouns take suffixes for grammar cases:\n1. **Genitive (-i or -gi)**: 'nga-i' (my), 'nang-gi' (of the house).\n2. **Dative/Locative (-la)**: 'nga-la' (to me), 'nang-la' (in/at the house).\n3. **Ergative (-is or -gis)**: 'nga-is zos' (by me eaten). This is extremely unique to Tibeto-Burman grammar!";
     } else if (lastUserMessage.includes("hello") || lastUserMessage.includes("greetings")) {
-      reply = "To say hello, we say **Khamzang** (or Khamzang thuk). To reply respectfully, say **Joo** or **Khamzang thuk**! Give it a try!";
+      reply = "To say hello, we say **Salam** (or Salam ley). To reply respectfully, say **Joo** or **Salam**! Give it a try!";
     } else if (lastUserMessage.includes("pronoun") || lastUserMessage.includes("i ") || lastUserMessage.includes("you")) {
       reply = "Here are the core personal pronouns in Kargili Purgi and Purki:\n- **I**: *nga*\n- **We**: *ngatang* (inclusive) / *ngadang*\n- **You**: *khyang* (standard) or *nyer* (honorific/polite)\n- **He/She**: *kho* / *mo*";
     }
